@@ -5,7 +5,6 @@ struct
   open Tds
   open Exceptions
   open Ast
-  open AstTds
   open Type
 
   type t1 = Ast.AstTds.programme
@@ -111,6 +110,7 @@ let rec analyse_type_instruction option i =
       | Type.Rat -> AffichageRat (fst ne)
       | Type.Bool -> AffichageBool (fst ne)
       | Type.Int -> AffichageInt (fst ne)
+      | _ -> failwith "Pas d'affichage pour indefined"
       end
       
   | AstTds.Conditionnelle (c,t,e) -> 

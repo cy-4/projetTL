@@ -3,9 +3,7 @@ module PasseCodeRatToTam : Passe.Passe with type t1 = Ast.AstPlacement.programme
 struct
 
   open Tds
-  open Exceptions
   open Ast
-  open AstTds
   open Type
   open Code
 
@@ -105,7 +103,6 @@ let rec analyse_code_instruction i (nb_p, t)  =
      
   | AstType.Retour (e) -> ( analyse_code_expression e^ "RETURN ("^string_of_int t ^") "^string_of_int nb_p^"\n",0)
   | AstType.Empty-> ("",0) 
-  | _ -> failwith "instruction inconnue"
   end
       
 (* analyse_tds_bloc : AstSyntax.bloc -> AstTds.bloc *)
@@ -128,16 +125,15 @@ and analyse_code_bloc li (nb_p, t) =
 (* Vérifie la bonne utilisation des identifiants et tranforme la fonction
 en une fonction de type AstTds.fonction *)
 (* Erreur si mauvaise utilisation des identifiants *)
-let rec recuper_nombre_memoire liste=
+let recuper_nombre_memoire liste=
   begin
   match liste with 
     | []-> 0
-    | t::q -> if q=[] then 
+    | t::_ -> 
       match info_ast_to_info t with
         | InfoVar(_,_,placement_derniere_variable,_) -> -placement_derniere_variable
         | _ -> failwith "Interne error"
-      else recuper_nombre_memoire q
-  end
+      end
 
 let analyse_code_fonction (AstPlacement.Fonction(n,lp,li))  =
   match info_ast_to_info n with

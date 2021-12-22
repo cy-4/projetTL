@@ -425,7 +425,7 @@ let _ = compiler   "../../fichiersRat/src-rat-tam-test/complique.rat" in ()
 (* Avec fonction                  *)
 (* ------------------------------ *)
 
-(*
+
 let%test_unit "test2"= 
   let _ = compiler "../../fichiersRat/src-rat-type-test/test2.rat" in ()
 
@@ -519,14 +519,14 @@ let%test_unit "testRetourFonction4"=
     in raise ErreurNonDetectee
   with
   | TypeInattendu(Bool,Int) -> ()
-
+(*
 let%test_unit "testRetourFonction5"=
   try
     let _ = compiler "../../fichiersRat/src-rat-type-test/testRetourFonction5.rat"
     in raise ErreurNonDetectee
   with
   | RetourDansMain -> ()
-
+*)
 let%test_unit "testRecursiviteFonction"= 
   let _ = compiler "../../fichiersRat/src-rat-type-test/testRecursiviteFonction.rat" in ()
 
@@ -559,5 +559,6 @@ let%test_unit "code_testfun6" =
 let%test_unit "code_testfuns" = 
 let _ = compiler   "../../fichiersRat/src-rat-tam-test/testfuns.rat" in ()
 
-*)
+
+
 

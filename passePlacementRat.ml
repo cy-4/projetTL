@@ -3,9 +3,7 @@ module PassePlacementRat : Passe.Passe with type t1 = Ast.AstType.programme and 
 struct
 
   open Tds
-  open Exceptions
   open Ast
-  open AstTds
   open Type
 
   type t1 = Ast.AstType.programme
@@ -20,7 +18,7 @@ en une instruction de type AstTds.instruction *)
 (* Erreur si mauvaise utilisation des identifiants *)
 let rec analyse_placement_instruction i base reg =
   match i with
-  | AstType.Declaration (info, e) ->
+  | AstType.Declaration (info, _) ->
       begin
       match info_ast_to_info info with
         | InfoVar(_,t,_,_) -> let taille = getTaille t in 
@@ -29,12 +27,12 @@ let rec analyse_placement_instruction i base reg =
         | _ -> failwith "Internal Error"
       end
 
-  | AstType.Conditionnelle (c,t,e) -> 
+  | AstType.Conditionnelle (_,t,e) -> 
     let _ = analyse_placement_bloc t base reg in
     let _ = analyse_placement_bloc e base reg in
     0
 
-  | AstType.TantQue (c,b) -> 
+  | AstType.TantQue (_,b) -> 
       let _ = analyse_placement_bloc b base reg in
       0
 
@@ -63,7 +61,7 @@ and analyse_placement_bloc li base reg =
 en une fonction de type AstTds.fonction *)
 (* Erreur si mauvaise utilisation des identifiants *)
   
-let rec analyse_placement_fonction base  (AstType.Fonction(info,lp,li)) =
+let analyse_placement_fonction _  (AstType.Fonction(info,lp,li)) =
     
     let _ = List.fold_right (
       fun pointeur reg ->

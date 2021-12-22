@@ -8,7 +8,7 @@ let runtamcmde = "java -jar ~/2A/traduction_lang/projet/projetTL/runtam.jar"
 (* Execute the TAM code obtained from the rat file and return the ouptut of this code *)
 let runtamcode cmde ratfile =
   let tamcode = compiler ratfile in
-     Printf.printf "%s" tamcode ; 
+     (* Printf.printf "%s" tamcode ; *)
   let (tamfile, chan) = Filename.open_temp_file "test" ".tam" in
   output_string chan tamcode;
   close_out chan;
@@ -23,7 +23,7 @@ let runtam ratfile =
   print_string (runtamcode runtamcmde ratfile)
 
 (* requires ppx_expect in jbuild, and `opam install ppx_expect` *)
-(*
+
 let%expect_test "testprintint" =
   runtam "../../fichiersRat/src-rat-tam-test/testprintint.rat";
   [%expect{| 42 |}]
@@ -101,18 +101,17 @@ let%expect_test "factfun4" =
 let%expect_test "factfun5" =
   runtam "../../fichiersRat/src-rat-tam-test/testfun5.rat";
   [%expect{| |}]
-*)
+
 let%expect_test "factfun6" =
   runtam "../../fichiersRat/src-rat-tam-test/testfun6.rat";
   [%expect{|truetrue|}]
-(*
+
 let%expect_test "factfuns" =
   runtam "../../fichiersRat/src-rat-tam-test/testfuns.rat";
   [%expect{| 28 |}]
-*)
+
 let%expect_test "factrec" =
   runtam "../../fichiersRat/src-rat-tam-test/factrec.rat";
   [%expect{| 120 |}]
-  (*
-*)
+
 
