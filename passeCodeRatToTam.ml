@@ -1,3 +1,4 @@
+(*
 (* Module de la passe de gestion des identifiants *)
 module PasseCodeRatToTam : Passe.Passe with type t1 = Ast.AstPlacement.programme and type t2 = string =
 struct
@@ -146,3 +147,4 @@ let analyse_code_fonction (AstPlacement.Fonction(n,lp,li))  =
 let analyser (AstPlacement.Programme (fonctions,prog)) =
   getEntete() ^  (String.concat "" (List.map analyse_code_fonction fonctions)) ^"\n"^ "main \n"^analyse_code_bloc prog (0,0) ^ "\nHALT\n"
 end
+*)

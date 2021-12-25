@@ -11,6 +11,28 @@ struct
   type t2 = Ast.AstTds.programme
 
 
+  let rec analyse_tds_affectable tds aff = 
+    begin 
+      match aff with
+        | AstSyntax.Ident(identificateur)-> begin
+          match chercherGlobalement tds identificateur with
+            | None -> 
+              raise (IdentifiantNonDeclare identificateur)
+            | Some info -> 
+              begin
+              match info_ast_to_info info with 
+                | InfoVar _ -> 
+                  (AstTds.Ident(info),identificateur)
+                | InfoConst(_,v) -> 
+                  (AstTds.Entier(v),identificateur)
+                | _ ->
+                  raise (MauvaiseUtilisationIdentifiant identificateur)
+              end
+          end
+        | Dref(affectable)-> analyse_tds_affectable tds affectable
+    end
+
+
 (* analyse_tds_expression : AstSyntax.expression -> AstTds.expression *)
 (* Paramètre tds : la table des symboles courante *)
 (* Paramètre e : l'expression à analyser *)
@@ -33,27 +55,25 @@ let rec analyse_tds_expression tds e =
                 raise (MauvaiseUtilisationIdentifiant f)
           end
       end
-    | AstSyntax.Ident (n) -> 
-      begin
-      match chercherGlobalement tds n with
-        | None -> 
-          raise (IdentifiantNonDeclare n)
-        | Some info -> 
-          begin
-          match info_ast_to_info info with 
-            | InfoVar _ -> 
-              AstTds.Ident(info)
-            | InfoConst(_,v) -> 
-              AstTds.Entier(v)
-            | _ ->
-              raise (MauvaiseUtilisationIdentifiant n)
-          end
-      end
+    | AstSyntax.Affectable (aff) -> AstTds.Affectable(fst(analyse_tds_affectable tds aff))
     | AstSyntax.Booleen (b) -> AstTds.Booleen(b)
     | AstSyntax.Entier (i) -> AstTds.Entier(i)
     | AstSyntax.Unaire (u, e1) -> AstTds.Unaire(u, analyse_tds_expression tds e1)
     | AstSyntax.Binaire (b, e1, e2) -> AstTds.Binaire (b, analyse_tds_expression tds e1, analyse_tds_expression tds e2 )
-              
+    | AstSyntax.Null ->  AstTds.Null
+    | AstSyntax.NouveauType(typ) ->  AstTds.NouveauType(typ)
+    | AstSyntax.Adresse(addr) ->   
+        match chercherGlobalement tds addr with
+            | None -> 
+              raise (IdentifiantNonDeclare addr)
+            | Some info -> 
+              begin
+              match info_ast_to_info info with 
+                | InfoVar _ -> 
+                  AstTds.Adresse(info)
+                | _ ->
+                  raise (MauvaiseUtilisationIdentifiant addr)
+              end
 
 
 
@@ -89,28 +109,15 @@ let rec analyse_tds_instruction tds i =
             il a donc déjà été déclaré dans le bloc courant *) 
             raise (DoubleDeclaration n)
       end
-  | AstSyntax.Affectation (n,e) ->
+  | AstSyntax.AffectationPointeur(affec,e) ->
+      let (info_affec,nom) = analyse_tds_affectable tds affec in
       begin
-        match chercherGlobalement tds n with
-        | None -> 
-          (* L'identifiant n'est pas trouvé dans la tds globale. *) 
-          raise (IdentifiantNonDeclare n)
-        | Some info -> 
-          (* L'identifiant est trouvé dans la tds globale, 
-          il a donc déjà été déclaré. L'information associée est récupérée. *) 
-          begin
-            match info_ast_to_info info with
-            | InfoVar _ -> 
-              (* Vérification de la bonne utilisation des identifiants dans l'expression *)
-              (* et obtention de l'expression transformée *) 
-              let ne = analyse_tds_expression tds e in
-              (* Renvoie de la nouvelle affectation où le nom a été remplacé par l'information 
-              et l'expression remplacée par l'expression issue de l'analyse *)
-               Affectation (info, ne)
-            |  _ ->
-              (* Modification d'une constante ou d'une fonction *)  
-              raise (MauvaiseUtilisationIdentifiant n) 
-          end
+      match info_affec with
+        | AstTds.Ident(_)-> let ne = analyse_tds_expression tds e in
+           (* Renvoie de la nouvelle affectation où le nom a été remplacé par l'information 
+            et l'expression remplacée par l'expression issue de l'analyse *)
+            AffectationPointeur (info_affec, ne)
+        | _ -> raise (MauvaiseUtilisationIdentifiant nom)
       end
   | AstSyntax.Constante (n,v) -> 
       begin

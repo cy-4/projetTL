@@ -1,4 +1,5 @@
 (* Module de la passe de gestion des types *)
+(*
 module PassePlacementRat : Passe.Passe with type t1 = Ast.AstType.programme and type t2 = Ast.AstPlacement.programme =
 struct
 
@@ -88,3 +89,4 @@ let analyser (AstType.Programme (fonctions,prog)) =
   AstPlacement.Programme(nf,prog)
 
 end
+*)

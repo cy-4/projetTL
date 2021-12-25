@@ -29,7 +29,9 @@
         "denom",   DENOM;
         "true",    TRUE;
         "false",   FALSE;
-        "return",  RETURN
+        "return",  RETURN;
+        "null",    NULL;
+        "new",     NEW
       ];
     fun id ->
       match Hashtbl.find_opt kws id with
@@ -58,6 +60,7 @@ rule token = parse
 | "+"          { PLUS }
 | "*"          { MULT }
 | "<"          { INF }
+| "&"          { AND }
 
 (* constantes entières *)
 | ("-")?['0'-'9']+ as i

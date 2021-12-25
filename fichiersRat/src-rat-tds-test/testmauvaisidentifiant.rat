@@ -1,0 +1,12 @@
+int px (int x int y){
+  int z = 2;
+  return (x+z);
+}
+
+main{
+    const px = 3;
+    int x = 3;
+    px = &x;
+    int y = (*px);
+    print y;
+}

@@ -1,4 +1,5 @@
 (* Module de la passe de gestion des types *)
+(*
 module PasseTypeRat : Passe.Passe with type t1 = Ast.AstTds.programme and type t2 = Ast.AstType.programme =
 struct
 
@@ -74,7 +75,7 @@ let rec analyse_type_expression e =
 (* Vérifie la bonne utilisation des identifiants et tranforme l'instruction
 en une instruction de type AstTds.instruction *)
 (* Erreur si mauvaise utilisation des identifiants *)
-let rec analyse_type_instruction option i =
+let rec analyse_type_instruction option i main=
   match i with
   | AstTds.Declaration (t, info, e) ->
       
@@ -117,9 +118,9 @@ let rec analyse_type_instruction option i =
       (* Analyse de la condition *)
       let nc = analyse_type_expression c in
       (* Analyse du bloc then *)
-      let tast = analyse_type_bloc option t in
+      let tast = analyse_type_bloc option t main in
       (* Analyse du bloc else *)
-      let east = analyse_type_bloc option e in
+      let east = analyse_type_bloc option e main in
       if (est_compatible Type.Bool (snd nc)) then
       (* Renvoie la nouvelle structure de la conditionnelle *)
         Conditionnelle ((fst nc), tast, east)
@@ -130,7 +131,7 @@ let rec analyse_type_instruction option i =
       (* Analyse de la condition *)
       let nc = analyse_type_expression c in
       (* Analyse du bloc *)
-      let bast = analyse_type_bloc option b in
+      let bast = analyse_type_bloc option b main in
       (* Renvoie la nouvelle structure de la boucle *)
       if (est_compatible Type.Bool (snd nc)) then
         TantQue ((fst nc), bast)
@@ -139,6 +140,7 @@ let rec analyse_type_instruction option i =
 
   | AstTds.Retour (e) -> 
       begin
+      if main then raise (RetourDansMain) else
       match option with
         | None -> failwith "pas de type retour"
         | Some t ->   
@@ -157,8 +159,8 @@ let rec analyse_type_instruction option i =
 (* Vérifie la bonne utilisation des identifiants et tranforme le bloc
 en un bloc de type AstTds.bloc *)
 (* Erreur si mauvaise utilisation des identifiants *)
-and analyse_type_bloc opt li =
-   let nli = List.map (function t -> analyse_type_instruction opt t) li in
+and analyse_type_bloc opt li main =
+   let nli = List.map (function t -> analyse_type_instruction opt t main) li in
    (* afficher_locale tdsbloc ; *) (* décommenter pour afficher la table locale *)
    nli
 
@@ -176,7 +178,7 @@ let analyse_type_fonction (AstTds.Fonction(t,info,lp,li))  =
       
       let (types_param,infos_param)  = List.split lp in
       modifier_type_fonction_info t types_param info;
-      let nli = analyse_type_bloc (Some t) li in
+      let nli = analyse_type_bloc (Some t) li false in
       AstType.Fonction(info, infos_param, nli)
       
 (* analyser : AstSyntax.ast -> AstTds.ast *)
@@ -187,7 +189,8 @@ en un programme de type AstTds.ast *)
 
 let analyser (AstTds.Programme (fonctions,prog)) =
   let nf = List.map (analyse_type_fonction) fonctions in
-  let nb = analyse_type_bloc None prog in
+  let nb = analyse_type_bloc None prog true in
   AstType.Programme (nf,nb)
 
 end
+*)

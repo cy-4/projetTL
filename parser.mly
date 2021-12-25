@@ -36,6 +36,10 @@ open Ast.AstSyntax
 %token MULT
 %token INF
 %token EOF
+%token NULL
+%token NEW
+%token AND
+
 
 (* Type de l'attribut synthétisé des non-terminaux *)
 %type <programme> prog
@@ -43,6 +47,7 @@ open Ast.AstSyntax
 %type <fonction> fonc
 %type <instruction list> is
 %type <instruction> i
+%type <affectable> a
 %type <typ> typ
 %type <(typ*string) list> dp
 %type <expression> e 
@@ -69,12 +74,15 @@ is :
 
 i :
 | t=typ n=ID EQUAL e1=e PV          {Declaration (t,n,e1)}
-| n=ID EQUAL e1=e PV                {Affectation (n,e1)}
+| affec=a EQUAL e1=e PV             {AffectationPointeur(affec,e1)}
 | CONST n=ID EQUAL e=ENTIER PV      {Constante (n,e)}
 | PRINT e1=e PV                     {Affichage (e1)}
 | IF exp=e li1=bloc ELSE li2=bloc   {Conditionnelle (exp,li1,li2)}
 | WHILE exp=e li=bloc               {TantQue (exp,li)}
 | RETURN exp=e PV                   {Retour (exp)}
+
+a : | n=ID      {Ident(n)}
+    | PO MULT ap=a PF {Dref(ap)}
 
 dp :
 |                         {[]}
@@ -84,11 +92,11 @@ typ :
 | BOOL    {Bool}
 | INT     {Int}
 | RAT     {Rat}
+| typee=typ MULT {Pointeur(typee)}
 
 e : 
 | CALL n=ID PO lp=cp PF   {AppelFonction (n,lp)}
 | CO e1=e SLASH e2=e CF   {Binaire(Fraction,e1,e2)}
-| n=ID                    {Ident n}
 | TRUE                    {Booleen true}
 | FALSE                   {Booleen false}
 | e=ENTIER                {Entier e}
@@ -99,6 +107,11 @@ e :
 | PO e1=e EQUAL e2=e PF   {Binaire (Equ,e1,e2)}
 | PO e1=e INF e2=e PF     {Binaire (Inf,e1,e2)}
 | PO exp=e PF             {exp}
+| affe=a                  {Affectable(affe)}
+| NULL                    {Null}
+| PO NEW typee=typ PF     {NouveauType(typee)}
+| AND n=ID                {Adresse(n)}
+
 
 cp :
 |               {[]}

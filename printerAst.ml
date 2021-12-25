@@ -1,3 +1,4 @@
+(*
 open Ast
 open Type
 
@@ -54,7 +55,6 @@ struct
   let rec string_of_expression e =
     match e with
     | AppelFonction (n,le) -> "call "^n^"("^((List.fold_right (fun i tq -> (string_of_expression i)^tq) le ""))^") "
-    | Ident n -> n^" "
     | Booleen b -> if b then "true " else "false "
     | Entier i -> (string_of_int i)^" "
     | Unaire (op,e1) -> (string_of_unaire op) ^ (string_of_expression e1)^" "
@@ -95,3 +95,4 @@ struct
     flush_all ()
 
 end
+*)

@@ -357,4 +357,29 @@ let%test_unit "code_testfuns" =
 let%test_unit "code_complique" = 
   let _ = compiler   "../../fichiersRat/src-rat-tam-test/complique.rat" in ()
 
+  (* Tests avec les pointeur*)
+  let%test_unit "code_sujet" = 
+  let _ = compiler   "../../fichiersRat/src-rat-tds-test/testsujet.rat" in ()
+
+  let%test_unit "code_double_decla_point" = 
+  try 
+    let _ = compiler "../../fichiersRat/src-rat-tds-test/testdouble_declaration_pointeur.rat" 
+    in raise ErreurNonDetectee
+  with
+  | DoubleDeclaration("px") -> ()
+
+  let%test_unit "code_point_non_def" = 
+  try 
+    let _ = compiler "../../fichiersRat/src-rat-tds-test/testpointeur_non_declare.rat" 
+    in raise ErreurNonDetectee
+  with
+  | IdentifiantNonDeclare("y") -> ()
+
+  let%test_unit "code_mauvais_id" = 
+  try 
+    let _ = compiler "../../fichiersRat/src-rat-tds-test/testmauvaisidentifiant.rat" 
+    in raise ErreurNonDetectee
+  with
+  | MauvaiseUtilisationIdentifiant("px") -> ()
+
 
