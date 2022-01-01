@@ -6,14 +6,15 @@ let rec string_of_type t =
   | Int  ->  "Int"
   | Rat  ->  "Rat"
   | Undefined -> "Undefined"
-  | Pointeur(typ) -> "Pointeur"^(string_of_type typ)
+  | Pointeur(typ) -> "Pointeur("^(string_of_type typ)^")"
 
 
-let est_compatible t1 t2 =
+let rec est_compatible t1 t2 =
   match t1, t2 with
   | Bool, Bool -> true
   | Int, Int -> true
   | Rat, Rat -> true 
+  | Pointeur(type_t1), Pointeur(type_t2) -> est_compatible type_t1 type_t2
   | _ -> false 
 
 let%test _ = est_compatible Bool Bool

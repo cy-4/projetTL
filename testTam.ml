@@ -1,4 +1,4 @@
-(*
+
 open Compilateur
 
 (* Changer le chemin d'accès du jar. *)
@@ -8,7 +8,7 @@ let runtamcmde = "java -jar ~/2A/traduction_lang/projet/projetTL/runtam.jar"
 (* Execute the TAM code obtained from the rat file and return the ouptut of this code *)
 let runtamcode cmde ratfile =
   let tamcode = compiler ratfile in
-     (* Printf.printf "%s" tamcode ; *)
+    (*  Printf.printf "%s" tamcode ; *)
   let (tamfile, chan) = Filename.open_temp_file "test" ".tam" in
   output_string chan tamcode;
   close_out chan;
@@ -115,4 +115,19 @@ let%expect_test "factrec" =
   [%expect{| 120 |}]
 
 
-*)
+let%expect_test "factrec" =
+  runtam "../../fichiersRat/src-rat-tam-test/factrec.rat";
+  [%expect{| 120 |}]
+
+  let%expect_test "factrec" =
+  runtam "../../fichiersRat/src-rat-tam-test/factrec.rat";
+  [%expect{| 120 |}]
+
+
+  let%expect_test "sujet" =
+  runtam "../../fichiersRat/testsujet.rat";
+  [%expect{| 3 |}]
+
+  let%expect_test "sujetTD" =
+  runtam "../../fichiersRat/src-rat-tam-test/exempleTd.rat";
+  [%expect{| 333|}]

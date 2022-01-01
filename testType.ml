@@ -1,4 +1,4 @@
-(*
+
 open Compilateur
 open Exceptions
 
@@ -560,6 +560,39 @@ let%test_unit "code_testfun6" =
 let%test_unit "code_testfuns" = 
 let _ = compiler   "../../fichiersRat/src-rat-tam-test/testfuns.rat" in ()
 
-*)
+  (* Tests avec les pointeur*)
+
+let%test_unit "code_sujet" = 
+let _ = compiler   "../../fichiersRat/testsujet.rat" in ()
+
+let%test_unit "code_mauvaise_decla_point" = 
+  try 
+    let _ = compiler "../../fichiersRat/src-rat-type-test/testmauvaisedeclapointeur.rat" 
+    in raise ErreurNonDetectee
+  with
+  |TypeInattendu(_,_) -> ()
+
+let%test_unit "code_mauvaise_mauvaise_affaction" = 
+try 
+  let _ = compiler "../../fichiersRat/src-rat-type-test/testMauvaisAffectation.rat" 
+  in raise ErreurNonDetectee
+with
+|TypeInattendu(_,_) -> ()
+
+let%test_unit "code_mauvaise_addresse" = 
+  try 
+    let _ = compiler "../../fichiersRat/src-rat-type-test/testMauvaiseAddr.rat" 
+    in raise ErreurNonDetectee
+  with
+  |TypeInattendu(_,_) -> ()
+
+  let%test_unit "code_mauvaise_pointeur" = 
+  try 
+    let _ = compiler "../../fichiersRat/src-rat-type-test/testVariablenonPointeur.rat" 
+    in raise ErreurNonDetectee
+  with
+  |TypeNonPointeur(Int) -> ()
+
+
 
 

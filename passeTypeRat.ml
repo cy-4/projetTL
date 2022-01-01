@@ -1,5 +1,5 @@
 (* Module de la passe de gestion des types *)
-(*
+
 module PasseTypeRat : Passe.Passe with type t1 = Ast.AstTds.programme and type t2 = Ast.AstType.programme =
 struct
 
@@ -10,6 +10,24 @@ struct
 
   type t1 = Ast.AstTds.programme
   type t2 = Ast.AstType.programme
+
+  let rec analyse_type_affectable aff = 
+    begin 
+      match aff with
+      | AstTds.Dref(affectable)->  let (np,tp) = analyse_type_affectable affectable in
+            (
+              match tp with
+                | Pointeur(typ)-> (AstType.Dref(np),typ)
+                | a -> raise (TypeNonPointeur(a))
+            )
+      | AstTds.Ident(info) -> 
+      begin
+        match info_ast_to_info info with
+              | InfoVar(_,t,_,_) -> (AstType.Ident (info), t)
+              | _ -> failwith "Internal error"
+      end
+      | AstTds.EntierCons(entier) -> (AstType.EntierCons(entier), Type.Int)
+    end
 
 
 (* analyse_tds_expression : AstTds.expression -> AstType.expression *)
@@ -30,15 +48,12 @@ let rec analyse_type_expression e =
         | _ -> failwith "internal error"
       end
 
-    | AstTds.Ident (info) -> 
-      begin
-      match info_ast_to_info info with
-        | InfoVar(_,t,_,_) -> (AstType.Ident (info), t)
-        | _ -> failwith "Internal error"
-      end
     | AstTds.Booleen (b) -> (AstType.Booleen(b), Type.Bool)
     
     | AstTds.Entier (i) -> (AstType.Entier(i), Type.Int)
+
+    | AstTds.Affectable (aff) -> let (newaffec,typ)= analyse_type_affectable aff in
+                                  (AstType.Affectable(newaffec),typ)      
 
     | AstTds.Unaire (u, e1) -> let (e1new,e1type) = analyse_type_expression e1 in
       begin 
@@ -61,9 +76,20 @@ let rec analyse_type_expression e =
         | (Type.Bool,AstSyntax.Equ,Type.Bool) -> (AstType.Binaire(EquBool,e1new,e2new),Type.Bool)
         | (Type.Int,AstSyntax.Inf,Type.Int) -> (AstType.Binaire(Inf,e1new,e2new),Type.Bool)
         | _ -> raise  (TypeBinaireInattendu (b,e1type,e2type))  
-        end                   
-                                    
-    
+        end    
+
+    | AstTds.Null -> (AstType.Null,Pointeur(Undefined))
+
+    | AstTds.NouveauType(typ) -> (AstType.NouveauType(typ),Pointeur(typ))
+
+    | AstTds.Adresse(info_addr) -> 
+    begin
+        match info_ast_to_info info_addr with
+          | InfoVar (_,t,_,_) -> 
+              (AstType.Adresse(info_addr), Pointeur(t)) 
+          | _ ->
+             failwith "errur interne, cela aurait du etre un InfoVar"
+    end
               
 
 
@@ -87,21 +113,19 @@ let rec analyse_type_instruction option i main=
               | InfoVar _ ->
                 modifier_type_info nt info;
                 AstType.Declaration(info, ne)
-              | _ -> raise (TypeInattendu(nt, t))
+              | _ -> failwith "Internal error, cela devait etre un info var"
             end
           else raise (TypeInattendu(nt, t))
  
 
-  | AstTds.Affectation (n,e) ->
+  | AstTds.AffectationPointeur (aff,e) ->
       begin
-      match info_ast_to_info n with
-        | InfoVar (_,t,_,_) -> 
-          let ne = analyse_type_expression e in
-          if (est_compatible t (snd ne)) then
-            Affectation (n, (fst ne))
+          let (aff_new,typ_aff) =  analyse_type_affectable aff in
+          let (e_new,typ_e) = analyse_type_expression e in
+          if (est_compatible typ_aff typ_e) then
+            AffectationPointeur (aff_new,e_new)
           else
-            raise (TypeInattendu ((snd ne),t))
-        | _ -> failwith "Internal Error"
+            raise (TypeInattendu (typ_e,typ_aff))
       end  
 
   | AstTds.Affichage e -> 
@@ -193,4 +217,4 @@ let analyser (AstTds.Programme (fonctions,prog)) =
   AstType.Programme (nf,nb)
 
 end
-*)
+

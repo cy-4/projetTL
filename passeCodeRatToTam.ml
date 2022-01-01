@@ -1,4 +1,4 @@
-(*
+
 (* Module de la passe de gestion des identifiants *)
 module PasseCodeRatToTam : Passe.Passe with type t1 = Ast.AstPlacement.programme and type t2 = string =
 struct
@@ -11,6 +11,38 @@ struct
   type t1 = Ast.AstPlacement.programme
   type t2 = string
 
+let rec utiliser_id_pointeur affectable droite_instruction =
+  match affectable with 
+    | AstType.Ident(info) -> 
+      begin 
+        match info_ast_to_info info with 
+        |InfoVar (_,typ,base,r) -> if droite_instruction then
+            let taille = string_of_int(getTaille typ) in
+            "LOAD "^"("^taille^")"^" "^string_of_int base^"["^r^"] \n"^
+            "LOADI "^"("^taille^")\n"
+          else
+            let taille = string_of_int(getTaille typ) in
+            "LOAD "^"("^taille^")"^" "^string_of_int base^"["^r^"] \n"^
+            "STOREI "^"("^taille^")\n"
+        | _ -> failwith "erreur interne"
+      end
+    | AstType.Dref(sous_affect) -> utiliser_id_pointeur sous_affect droite_instruction
+    |_ -> failwith "intern error cela doit pas un cons"
+
+let analyse_code_affectable aff = 
+begin 
+  match aff with
+  | AstType.Ident (n) -> 
+    begin
+      match info_ast_to_info n with 
+        | InfoVar (_,t,base,r) ->   
+          let taille = string_of_int (getTaille t) in
+          "LOAD "^"("^taille^")"^" "^string_of_int base^"["^r^"] \n"
+        | _ ->  failwith "erreur interne"
+    end
+  | AstType.Dref(affectable)-> utiliser_id_pointeur affectable true
+  | AstType.EntierCons(entier) -> "LOADL " ^ string_of_int entier ^"\n"
+end
 
 (* analyse_tds_expression : AstSyntax.expression -> AstTds.expression *)
 (* Paramètre tds : la table des symboles courante *)
@@ -29,14 +61,6 @@ let rec analyse_code_expression e =
         | _ -> failwith "erreur interne pas de InfoVar"
         end) in
       String.concat "" (List.map analyse_code_expression eliste) ^ "CALL (ST) " ^ nom_f^ "\n"
-    | AstType.Ident (n) -> 
-      begin
-      match info_ast_to_info n with 
-        | InfoVar (_,t,base,r) ->   
-          let taille = string_of_int (getTaille t) in
-          "LOAD "^"("^taille^")"^" "^string_of_int base^"["^r^"] \n"
-        | _ ->  failwith "erreur interne"
-      end
     | AstType.Booleen (b) -> if b then "LOADL 1 \n" else "LOADL 0 \n"
     | AstType.Entier (i) ->  "LOADL " ^ string_of_int i ^"\n"
     | AstType.Unaire (u, e1) -> (analyse_code_expression e1)^(match u with
@@ -51,10 +75,16 @@ let rec analyse_code_expression e =
           |EquInt  -> "SUBR IEq \n"
           |EquBool -> "SUBR IEq \n"
           |Inf -> "SUBR ILss \n" )
+    | AstType.Affectable(aff) -> analyse_code_affectable aff
+    | AstType.Null -> "SUBR MVoid \n"
+    | AstType.NouveauType(typ) -> "LOADL "^string_of_int(getTaille typ)^
+          "\nSUBR MAlloc \n"
+    | AstType.Adresse(info) ->
+      match info_ast_to_info info with 
+        |InfoVar (_,_,base,r) ->   
+          "LOADA "^string_of_int base^"["^r^"] \n"
+        | _ -> failwith "erreur interne"
     
-
-
-
 
 (* analyse_tds_instruction : AstSyntax.instruction -> tds -> AstTds.instruction *)
 (* Paramètre tds : la table des symboles courante *)
@@ -75,15 +105,20 @@ let rec analyse_code_instruction i (nb_p, t)  =
         "STORE ("^taille^") "^(string_of_int b)^"["^r^"]"^"\n",1)
       | _ -> failwith "erreur interne"
       end
-  | AstType.Affectation (n,e) ->
-      begin 
-      match info_ast_to_info n with 
-      | InfoVar (_,typ,b,r) -> 
-        let taille = string_of_int(getTaille typ) in
-        ((analyse_code_expression e)^"STORE ("^taille^") " ^(string_of_int b)^"["^r^"] \n", 0)
-      | _ -> failwith "internal error"
-    end
-    
+  | AstType.AffectationPointeur (aff,e) ->
+      begin
+      match aff with 
+        | Ident(n) -> 
+            begin 
+            match info_ast_to_info n with 
+            | InfoVar (_,typ,b,r) -> 
+              let taille = string_of_int(getTaille typ) in
+              ((analyse_code_expression e)^"STORE ("^taille^") " ^(string_of_int b)^"["^r^"] \n", 0)
+            | _ -> failwith "internal error"
+            end
+        |Dref(affectable) -> ((analyse_code_expression e)^(utiliser_id_pointeur affectable false),0)
+        | _ -> failwith "internal error cela peut pas etre un Cons"
+      end
   | AstType.AffichageInt e -> ((analyse_code_expression e)^"SUBR IOut \n",0)
 
   | AstType.AffichageRat e -> ((analyse_code_expression e)^"CALL (ST) ROut \n",0)
@@ -147,4 +182,3 @@ let analyse_code_fonction (AstPlacement.Fonction(n,lp,li))  =
 let analyser (AstPlacement.Programme (fonctions,prog)) =
   getEntete() ^  (String.concat "" (List.map analyse_code_fonction fonctions)) ^"\n"^ "main \n"^analyse_code_bloc prog (0,0) ^ "\nHALT\n"
 end
-*)

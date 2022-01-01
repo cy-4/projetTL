@@ -358,8 +358,7 @@ let%test_unit "code_complique" =
   let _ = compiler   "../../fichiersRat/src-rat-tam-test/complique.rat" in ()
 
   (* Tests avec les pointeur*)
-  let%test_unit "code_sujet" = 
-  let _ = compiler   "../../fichiersRat/src-rat-tds-test/testsujet.rat" in ()
+  
 
   let%test_unit "code_double_decla_point" = 
   try 

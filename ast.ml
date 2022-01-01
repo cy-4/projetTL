@@ -91,7 +91,7 @@ struct
     | Ident of Tds.info_ast
     (* Accès à la valeur d'un affectable *)
     | Dref of affectable
-    | Entier of int
+    | EntierCons of int
   
   (* Expressions existantes dans notre langage *)
   (* ~ expression de l'AST syntaxique où les noms des identifiants ont été
@@ -139,6 +139,14 @@ end
 module AstType =
 struct
 
+(* Affectable de Rat*)
+type affectable = 
+  (* Accès à un identifiant représenté par son nom *)
+  | Ident of Tds.info_ast
+  (* Accès à la valeur d'un affectable *)
+  | Dref of affectable
+  | EntierCons of int
+
 (* Opérateurs unaires de Rat - résolution de la surcharge *)
 type unaire = Numerateur | Denominateur
 
@@ -149,11 +157,14 @@ type binaire = Fraction | PlusInt | PlusRat | MultInt | MultRat | EquInt | EquBo
 (* = expression de AstTds *)
 type expression =
   | AppelFonction of Tds.info_ast * expression list
-  | Ident of Tds.info_ast
   | Booleen of bool
   | Entier of int
   | Unaire of unaire * expression
   | Binaire of binaire * expression * expression
+  | Affectable of affectable
+  | Null
+  | NouveauType of typ
+  | Adresse of Tds.info_ast
 
 (* instructions existantes Rat *)
 (* = instruction de AstTds + informations associées aux identificateurs, mises à jour *)
@@ -161,13 +172,13 @@ type expression =
 type bloc = instruction list
  and instruction =
   | Declaration of Tds.info_ast * expression
-  | Affectation of Tds.info_ast * expression
   | AffichageInt of expression
   | AffichageRat of expression
   | AffichageBool of expression
   | Conditionnelle of expression * bloc * bloc
   | TantQue of expression * bloc
   | Retour of expression
+  | AffectationPointeur of affectable * expression
   | Empty (* les nœuds ayant disparus: Const *)
 
 (* informations associées à l'identificateur (dont son nom), liste des paramètres, corps *)
@@ -193,6 +204,10 @@ end
 (* ******************************* *)
 module AstPlacement =
 struct
+
+(* Affectable existantes dans notre langage *)
+(* = affectable de AstType  *)
+type affectable = AstType.affectable
 
 (* Expressions existantes dans notre langage *)
 (* = expression de AstType  *)

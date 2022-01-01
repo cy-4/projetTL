@@ -21,15 +21,15 @@ struct
             | Some info -> 
               begin
               match info_ast_to_info info with 
-                | InfoVar _ -> 
-                  (AstTds.Ident(info),identificateur)
+                | InfoVar _ ->   (AstTds.Ident(info),identificateur)
                 | InfoConst(_,v) -> 
-                  (AstTds.Entier(v),identificateur)
+                  (AstTds.EntierCons(v),identificateur)
                 | _ ->
                   raise (MauvaiseUtilisationIdentifiant identificateur)
               end
           end
-        | Dref(affectable)-> analyse_tds_affectable tds affectable
+        | AstSyntax.Dref(affectable)-> let (newaff,id)=analyse_tds_affectable tds affectable in
+                  (AstTds.Dref(newaff),id)
     end
 
 
@@ -117,6 +117,10 @@ let rec analyse_tds_instruction tds i =
            (* Renvoie de la nouvelle affectation où le nom a été remplacé par l'information 
             et l'expression remplacée par l'expression issue de l'analyse *)
             AffectationPointeur (info_affec, ne)
+        | AstTds.Dref(_) -> let ne = analyse_tds_expression tds e  in
+        (* Renvoie de la nouvelle affectation où le nom a été remplacé par l'information 
+         et l'expression remplacée par l'expression issue de l'analyse *)
+         AffectationPointeur (info_affec, ne)
         | _ -> raise (MauvaiseUtilisationIdentifiant nom)
       end
   | AstSyntax.Constante (n,v) -> 
