@@ -111,7 +111,7 @@ let rec analyse_type_instruction option i main=
             begin
             match info_ast_to_info info with
               | InfoVar _ ->
-                modifier_type_info nt info;
+                modifier_type_info t info;
                 AstType.Declaration(info, ne)
               | _ -> failwith "Internal error, cela devait etre un info var"
             end

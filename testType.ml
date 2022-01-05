@@ -565,6 +565,9 @@ let _ = compiler   "../../fichiersRat/src-rat-tam-test/testfuns.rat" in ()
 let%test_unit "code_sujet" = 
 let _ = compiler   "../../fichiersRat/testsujet.rat" in ()
 
+let%test_unit "code_sujet_avec_null" = 
+let _ = compiler   "../../fichiersRat/src-rat-type-test/testcodesujet_null.rat" in ()
+
 let%test_unit "code_mauvaise_decla_point" = 
   try 
     let _ = compiler "../../fichiersRat/src-rat-type-test/testmauvaisedeclapointeur.rat" 

@@ -114,20 +114,16 @@ let%expect_test "factrec" =
   runtam "../../fichiersRat/src-rat-tam-test/factrec.rat";
   [%expect{| 120 |}]
 
+(* Test avec pointeur*)
 
-let%expect_test "factrec" =
-  runtam "../../fichiersRat/src-rat-tam-test/factrec.rat";
-  [%expect{| 120 |}]
+let%expect_test "sujet" =
+runtam "../../fichiersRat/testsujet.rat";
+[%expect{| 3 |}]
 
-  let%expect_test "factrec" =
-  runtam "../../fichiersRat/src-rat-tam-test/factrec.rat";
-  [%expect{| 120 |}]
+let%expect_test "sujetTD" =
+runtam "../../fichiersRat/src-rat-tam-test/exempleTd.rat";
+[%expect{| 333|}]
 
-
-  let%expect_test "sujet" =
-  runtam "../../fichiersRat/testsujet.rat";
-  [%expect{| 3 |}]
-
-  let%expect_test "sujetTD" =
-  runtam "../../fichiersRat/src-rat-tam-test/exempleTd.rat";
-  [%expect{| 333|}]
+let%expect_test "code_sujet_avec_null" = 
+runtam "../../fichiersRat/src-rat-tam-test/testsujet_avec null.rat";
+[%expect{| 3 |}]
