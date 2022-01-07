@@ -1,0 +1,5 @@
+test{
+  bool x = true;
+  bool y = false;
+  y += x;
+}

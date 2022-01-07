@@ -164,6 +164,21 @@ let rec analyse_tds_instruction tds i =
       (* Analyse de l'expression *)
       let ne = analyse_tds_expression tds e in
       Retour (ne)
+   | AstSyntax.AssignationAdd (affect,e) -> 
+      (* Analyse de l'affectable *)
+      let (info_affec,nom) = analyse_tds_affectable tds affect in
+      begin
+      match info_affec with
+        | AstTds.Ident(_)-> let ne = analyse_tds_expression tds e in
+           (* Renvoie de la nouvelle affectation où le nom a été remplacé par l'information 
+            et l'expression remplacée par l'expression issue de l'analyse *)
+            AffectationPointeur (info_affec, Binaire(Plus,AstTds.Affectable(info_affec),ne))
+        | AstTds.Dref(_) -> let ne = analyse_tds_expression tds e  in
+        (* Renvoie de la nouvelle affectation où le nom a été remplacé par l'information 
+         et l'expression remplacée par l'expression issue de l'analyse *)
+         AffectationPointeur (info_affec, Binaire(Plus,AstTds.Affectable(info_affec),ne))
+        | _ -> raise (MauvaiseUtilisationIdentifiant nom)
+      end
 
       
 (* analyse_tds_bloc : AstSyntax.bloc -> AstTds.bloc *)

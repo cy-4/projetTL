@@ -75,6 +75,7 @@ is :
 i :
 | t=typ n=ID EQUAL e1=e PV          {Declaration (t,n,e1)}
 | affec=a EQUAL e1=e PV             {AffectationPointeur(affec,e1)}
+| affec=a PLUS EQUAL e1=e PV           {AssignationAdd (affec,e1)}
 | CONST n=ID EQUAL e=ENTIER PV      {Constante (n,e)}
 | PRINT e1=e PV                     {Affichage (e1)}
 | IF exp=e li1=bloc ELSE li2=bloc   {Conditionnelle (exp,li1,li2)}

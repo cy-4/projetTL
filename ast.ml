@@ -67,6 +67,8 @@ and instruction =
   | Retour of expression
   (* Affectation d'un affectable représentée par son affectable et la nouvelle valeur affectée*)
   | AffectationPointeur of affectable * expression
+  (* Assignation d'addition entre un infectable et une expression*)
+  | AssignationAdd of affectable * expression
 
 (* Structure des fonctions de Rat *)
 (* type de retour - nom - liste des paramètres (association type et nom) - corps de la fonction *)

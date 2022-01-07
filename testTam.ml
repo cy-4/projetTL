@@ -127,3 +127,13 @@ runtam "../../fichiersRat/src-rat-tam-test/exempleTd.rat";
 let%expect_test "code_sujet_avec_null" = 
 runtam "../../fichiersRat/src-rat-tam-test/testsujet_avec null.rat";
 [%expect{| 3 |}]
+
+(* Test assignation addition*)
+
+let%expect_test "sujet" =
+  runtam "../../fichiersRat/testsujet_assignation_add.rat";
+  [%expect{| 7[37/40] |}]
+
+let%expect_test "code_avec_ad_etpointeur" = 
+runtam "../../fichiersRat/src-rat-tam-test/testAdd_avec_point.rat";
+[%expect{| 5 |}]

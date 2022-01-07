@@ -381,4 +381,17 @@ let%test_unit "code_complique" =
   with
   | MauvaiseUtilisationIdentifiant("px") -> ()
 
+  (* Tests avec l'assignation d'addition*)
+let%test_unit "code_sujet_avec_ad" = 
+  let _ = compiler   "../../fichiersRat/testsujet_assignation_add.rat" in ()
 
+let%test_unit "code_mauvais_id_ad" = 
+  try 
+    let _ = compiler "../../fichiersRat/src-rat-tds-test/testMauvais_id_add.rat" 
+    in raise ErreurNonDetectee
+  with
+  | IdentifiantNonDeclare("s") -> ()
+
+let%test_unit "code_avec_ad_etpointeur" = 
+  let _ = compiler   "../../fichiersRat/src-rat-tds-test/testAdd_avec_point.rat" in ()
+  

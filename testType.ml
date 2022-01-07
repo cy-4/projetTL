@@ -596,6 +596,18 @@ let%test_unit "code_mauvaise_addresse" =
   with
   |TypeNonPointeur(Int) -> ()
 
+   (* Tests avec l'assignation d'addition*)
+
+let%test_unit "code_sujet_avec_ad" = 
+  let _ = compiler   "../../fichiersRat/testsujet_assignation_add.rat" in ()
+
+  let%test_unit "code_mauvaise_add" = 
+  try 
+    let _ = compiler "../../fichiersRat/src-rat-type-test/testAddboolean.rat" 
+    in raise ErreurNonDetectee
+  with
+  |TypeBinaireInattendu(Plus, Bool, Bool) -> ()
+
 
 
 
