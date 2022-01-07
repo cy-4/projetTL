@@ -31,7 +31,9 @@
         "false",   FALSE;
         "return",  RETURN;
         "null",    NULL;
-        "new",     NEW
+        "new",     NEW;
+        "typedef", TYPEDEF;
+        "struct" ,  STRUCT
       ];
     fun id ->
       match Hashtbl.find_opt kws id with
@@ -61,6 +63,7 @@ rule token = parse
 | "*"          { MULT }
 | "<"          { INF }
 | "&"          { AND }
+| "."          { POINT }
 
 (* constantes entières *)
 | ("-")?['0'-'9']+ as i
@@ -68,6 +71,10 @@ rule token = parse
 (* identifiants et mots-clefs *)
 | ['a'-'z'](['A'-'Z''a'-'z''0'-'9']|"-"|"_")* as n
                { ident n }
+
+(* tid pour les types nommés*)
+| ['A'-'Z'](['A'-'Z''a'-'z''0'-'9']|"-"|"_")* as t
+               { ident t }
 
 (* fin de lecture *)
 | eof          { EOF }

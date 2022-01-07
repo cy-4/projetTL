@@ -9,6 +9,7 @@ open Ast.AstSyntax
 
 %token <int> ENTIER
 %token <string> ID
+%token <string> TID
 %token RETURN
 %token PV
 %token AO
@@ -39,6 +40,9 @@ open Ast.AstSyntax
 %token NULL
 %token NEW
 %token AND
+%token TYPEDEF
+%token STRUCT
+%token POINT
 
 
 (* Type de l'attribut synthétisé des non-terminaux *)
@@ -61,8 +65,12 @@ open Ast.AstSyntax
 main : lfi = prog EOF     {lfi}
 
 prog :
-| lf = fonc  lfi = prog   {let (Programme (lf1,li))=lfi in (Programme (lf::lf1,li))}
+| typenomme=td lf = fonc  lfi = prog   {let (Programme (f1,li))=lfi in (Programme ((typenomme,lf)::f1,li))}
 | ID li = bloc            {Programme ([],li)}
+
+td : 
+|                         {[]}
+| TYPEDEF a=TID EQUAL t=typ PV tdbase=td {(a,t)::tdbase}
 
 fonc : t=typ n=ID PO p=dp PF AO li=is AF {Fonction(t,n,p,li)}
 
@@ -75,15 +83,17 @@ is :
 i :
 | t=typ n=ID EQUAL e1=e PV          {Declaration (t,n,e1)}
 | affec=a EQUAL e1=e PV             {AffectationPointeur(affec,e1)}
-| affec=a PLUS EQUAL e1=e PV           {AssignationAdd (affec,e1)}
+| affec=a PLUS EQUAL e1=e PV        {AssignationAdd (affec,e1)}
 | CONST n=ID EQUAL e=ENTIER PV      {Constante (n,e)}
 | PRINT e1=e PV                     {Affichage (e1)}
 | IF exp=e li1=bloc ELSE li2=bloc   {Conditionnelle (exp,li1,li2)}
 | WHILE exp=e li=bloc               {TantQue (exp,li)}
 | RETURN exp=e PV                   {Retour (exp)}
+| TYPEDEF a=TID EQUAL t=typ PV      {DeclarationTypeNomme(a,t)}
 
 a : | n=ID      {Ident(n)}
     | PO MULT ap=a PF {Dref(ap)}
+    | PO a1=a POINT n=ID PF   {Champ(a1,n)}
 
 dp :
 |                         {[]}
@@ -94,6 +104,8 @@ typ :
 | INT     {Int}
 | RAT     {Rat}
 | typee=typ MULT {Pointeur(typee)}
+| nom=TID {TypeNomme(nom)}
+| STRUCT AO dp1=dp AF  {Enregistrement(dp1)}
 
 e : 
 | CALL n=ID PO lp=cp PF   {AppelFonction (n,lp)}
@@ -112,6 +124,7 @@ e :
 | NULL                    {Null}
 | PO NEW typee=typ PF     {NouveauType(typee)}
 | AND n=ID                {Adresse(n)}
+| AO cp1=cp AF            {ListeChamp(cp1)}
 
 
 cp :

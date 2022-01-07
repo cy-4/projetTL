@@ -1,4 +1,5 @@
 (* Module de la passe de gestion des identifiants *)
+(*
 module PasseTdsRat : Passe.Passe with type t1 = Ast.AstSyntax.programme and type t2 = Ast.AstTds.programme =
 struct
 
@@ -259,3 +260,4 @@ let analyser (AstSyntax.Programme (fonctions,prog)) =
   Programme (nf,nb)
 
 end
+*)

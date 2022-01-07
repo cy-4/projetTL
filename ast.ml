@@ -28,6 +28,8 @@ type affectable =
   | Ident of string
   (* Accès à la valeur d'un affectable *)
   | Dref of affectable
+  (* Accès à un champ de l’enregistrement*)
+  | Champ of affectable * string
 
 (* Expressions de Rat *)
 type expression =
@@ -49,6 +51,8 @@ type expression =
   | NouveauType of typ
   (* Adresse d'un id*)
   | Adresse of string
+  (* Creation d’un enregistrement avec la liste des valeurs de ses champs*)
+  | ListeChamp of expression list
 
 (* Instructions de Rat *)
 type bloc = instruction list
@@ -69,14 +73,18 @@ and instruction =
   | AffectationPointeur of affectable * expression
   (* Assignation d'addition entre un infectable et une expression*)
   | AssignationAdd of affectable * expression
+  (* Définition locale (à un bloc) d’un type nommée ́*)
+  | DeclarationTypeNomme of string * typ
 
 (* Structure des fonctions de Rat *)
 (* type de retour - nom - liste des paramètres (association type et nom) - corps de la fonction *)
 type fonction = Fonction of typ * string * (typ * string) list * bloc
 
+
+
 (* Structure d'un programme Rat *)
 (* liste de fonction - programme principal *)
-type programme = Programme of fonction list * bloc
+type programme = Programme of ((string * typ) list * fonction) list * bloc
 
 end
 

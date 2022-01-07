@@ -1,4 +1,4 @@
-type typ = Bool | Int | Rat | Undefined | Pointeur of typ
+type typ = Bool | Int | Rat | Undefined | Pointeur of typ | TypeNomme of string | Enregistrement of (typ * string) list
 
 let rec string_of_type t = 
   match t with
