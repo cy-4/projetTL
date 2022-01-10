@@ -7,6 +7,9 @@ let rec string_of_type t =
   | Rat  ->  "Rat"
   | Undefined -> "Undefined"
   | Pointeur(typ) -> "Pointeur("^(string_of_type typ)^")"
+  | TypeNomme(nom) -> "Type nommées de "^nom
+  | Enregistrement([]) -> ""
+  | Enregistrement((typee,champ)::q) -> "Champ: "^(string_of_type typee)^" "^champ^(string_of_type (Enregistrement(q)))
 
 
 let rec est_compatible t1 t2 =
@@ -49,13 +52,16 @@ let%test _ = not (est_compatible_list [Int] [Rat ; Int])
 let%test _ = not (est_compatible_list [Int ; Rat] [Rat ; Int])
 let%test _ = not (est_compatible_list [Bool ; Rat ; Bool] [Bool ; Rat ; Bool ; Int])
 
-let getTaille t =
+let rec getTaille t =
   match t with
   | Int -> 1
   | Bool -> 1
   | Rat -> 2
   | Undefined -> 0
   | Pointeur(_) -> 1
+  | TypeNomme(_) -> failwith "internal error, pas d'apppel à ce cas"
+  | Enregistrement([]) -> 0
+  | Enregistrement((typee,_)::q) -> (getTaille typee) + getTaille(Enregistrement(q))
   
 let%test _ = getTaille Int = 1
 let%test _ = getTaille Bool = 1
