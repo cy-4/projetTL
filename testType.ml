@@ -1,4 +1,4 @@
-(*
+
 open Compilateur
 open Exceptions
 
@@ -607,7 +607,7 @@ let%test_unit "code_sujet_avec_ad" =
     in raise ErreurNonDetectee
   with
   |TypeBinaireInattendu(Plus, Bool, Bool) -> ()
-*)
+
 
 
 
