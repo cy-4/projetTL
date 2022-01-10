@@ -65,12 +65,12 @@ open Ast.AstSyntax
 main : lfi = prog EOF     {lfi}
 
 prog :
-| typenomme=td lf = fonc  lfi = prog   {let (Programme (f1,li))=lfi in (Programme ((typenomme,lf)::f1,li))}
-| ID li = bloc            {Programme ([],li)}
+| typenomme=td lf = fonc  lfi = prog   {let (Programme (ft,f1,li))=lfi in (Programme (typenomme::ft,lf::f1,li))}
+| ID li = bloc            {Programme ([],[],li)}
 
 td : 
 |                         {[]}
-| TYPEDEF a=TID EQUAL t=typ PV tdbase=td {(a,t)::tdbase}
+| TYPEDEF a=TID EQUAL t=typ PV tdbase=td {DeclarationTypeNomme(a,t)::tdbase}
 
 fonc : t=typ n=ID PO p=dp PF AO li=is AF {Fonction(t,n,p,li)}
 

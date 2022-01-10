@@ -394,4 +394,18 @@ let%test_unit "code_mauvais_id_ad" =
 
 let%test_unit "code_avec_ad_etpointeur" = 
   let _ = compiler   "../../fichiersRat/src-rat-tds-test/testAdd_avec_point.rat" in ()
-  
+
+(* Test avec Type nommées*)
+let%test_unit "code_sujet1_avec_TyN" = 
+  let _ = compiler   "../../fichiersRat/testTyNsujet.rat" in ()
+
+ (* Test avec Type nommées*)
+let%test_unit "code_sujet2_avec_TyN" = 
+let _ = compiler   "../../fichiersRat/testTyNsujet2.rat" in ()
+
+let%test_unit "code_double_decla_typN" = 
+  try 
+    let _ = compiler "../../fichiersRat/src-rat-tds-test/testTyNdoubledecla.rat" 
+    in raise ErreurNonDetectee
+  with
+  | DoubleDeclaration("Int2") -> ()

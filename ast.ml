@@ -80,11 +80,9 @@ and instruction =
 (* type de retour - nom - liste des paramètres (association type et nom) - corps de la fonction *)
 type fonction = Fonction of typ * string * (typ * string) list * bloc
 
-
-
 (* Structure d'un programme Rat *)
 (* liste de fonction - programme principal *)
-type programme = Programme of ((string * typ) list * fonction) list * bloc
+type programme = Programme of (instruction list) list * fonction list * bloc
 
 end
 
@@ -102,6 +100,7 @@ struct
     (* Accès à la valeur d'un affectable *)
     | Dref of affectable
     | EntierCons of int
+    | Champ of affectable * string
   
   (* Expressions existantes dans notre langage *)
   (* ~ expression de l'AST syntaxique où les noms des identifiants ont été
@@ -116,6 +115,8 @@ struct
     | Null
     | NouveauType of typ
     | Adresse of Tds.info_ast
+    | ListeChamp of expression list
+
 
   (* instructions existantes dans notre langage *)
   (* ~ instruction de l'AST syntaxique où les noms des identifiants ont été
@@ -129,13 +130,12 @@ struct
     | TantQue of expression * bloc
     | Retour of expression
     | Empty (* les nœuds ayant disparus: Const *)
-      (* Affectation d'une variable représentée par son nom et la nouvelle valeur affectée *)
     | AffectationPointeur of affectable * expression
-
 
   (* Structure des fonctions dans notre langage *)
   (* type de retour - informations associées à l'identificateur (dont son nom) - liste des paramètres (association type et information sur les paramètres) - corps de la fonction *)
   type fonction = Fonction of typ * Tds.info_ast * (typ * Tds.info_ast ) list * bloc
+
 
   (* Structure d'un programme dans notre langage *)
   type programme = Programme of fonction list * bloc
@@ -156,6 +156,7 @@ type affectable =
   (* Accès à la valeur d'un affectable *)
   | Dref of affectable
   | EntierCons of int
+  | Champ of affectable * string
 
 (* Opérateurs unaires de Rat - résolution de la surcharge *)
 type unaire = Numerateur | Denominateur
@@ -175,6 +176,8 @@ type expression =
   | Null
   | NouveauType of typ
   | Adresse of Tds.info_ast
+  | ListeChamp of expression list
+
 
 (* instructions existantes Rat *)
 (* = instruction de AstTds + informations associées aux identificateurs, mises à jour *)

@@ -1,4 +1,4 @@
-(*
+
 (* Module de la passe de gestion des identifiants *)
 module PasseCodeRatToTam : Passe.Passe with type t1 = Ast.AstPlacement.programme and type t2 = string =
 struct
@@ -27,7 +27,7 @@ let rec utiliser_id_pointeur affectable droite_instruction =
         | _ -> failwith "erreur interne"
       end
     | AstType.Dref(sous_affect) -> utiliser_id_pointeur sous_affect droite_instruction
-    |_ -> failwith "intern error cela doit pas un cons"
+    |_ -> failwith "intern error cela ne doit pas un cons"
 
 let analyse_code_affectable aff = 
 begin 
@@ -42,6 +42,7 @@ begin
     end
   | AstType.Dref(affectable)-> utiliser_id_pointeur affectable true
   | AstType.EntierCons(entier) -> "LOADL " ^ string_of_int entier ^"\n"
+  | AstType.Champ(_) -> failwith "internal error, pas encore fait, ne peut pas rentrer dans ce cas"
 end
 
 (* analyse_tds_expression : AstSyntax.expression -> AstTds.expression *)
@@ -80,10 +81,13 @@ let rec analyse_code_expression e =
     | AstType.NouveauType(typ) -> "LOADL "^string_of_int(getTaille typ)^
           "\nSUBR MAlloc \n"
     | AstType.Adresse(info) ->
+      begin
       match info_ast_to_info info with 
         |InfoVar (_,_,base,r) ->   
           "LOADA "^string_of_int base^"["^r^"] \n"
         | _ -> failwith "erreur interne"
+      end
+    | AstType.ListeChamp(_) -> failwith "internal error, pas encore fait, ne peut pas rentrer dans ce cas"
     
 
 (* analyse_tds_instruction : AstSyntax.instruction -> tds -> AstTds.instruction *)
@@ -182,4 +186,3 @@ let analyse_code_fonction (AstPlacement.Fonction(n,lp,li))  =
 let analyser (AstPlacement.Programme (fonctions,prog)) =
   getEntete() ^  (String.concat "" (List.map analyse_code_fonction fonctions)) ^"\n"^ "main \n"^analyse_code_bloc prog (0,0) ^ "\nHALT\n"
 end
-*)

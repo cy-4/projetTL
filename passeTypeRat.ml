@@ -1,5 +1,5 @@
 (* Module de la passe de gestion des types *)
-(*
+
 module PasseTypeRat : Passe.Passe with type t1 = Ast.AstTds.programme and type t2 = Ast.AstType.programme =
 struct
 
@@ -27,6 +27,7 @@ struct
               | _ -> failwith "Internal error"
       end
       | AstTds.EntierCons(entier) -> (AstType.EntierCons(entier), Type.Int)
+      | AstTds.Champ(_) -> failwith "internal error, pas encore fait, ne peut pas rentrer dans ce cas"
     end
 
 
@@ -90,6 +91,7 @@ let rec analyse_type_expression e =
           | _ ->
              failwith "errur interne, cela aurait du etre un InfoVar"
     end
+    | AstTds.ListeChamp(_) -> failwith "internal error, pas encore fait, ne peut pas rentrer dans ce cas"
               
 
 
@@ -218,4 +220,3 @@ let analyser (AstTds.Programme (fonctions,prog)) =
 
 end
 
-*)

@@ -73,8 +73,8 @@ rule token = parse
                { ident n }
 
 (* tid pour les types nommés*)
-| ['A'-'Z'](['A'-'Z''a'-'z''0'-'9']|"-"|"_")* as t
-               { ident t }
+| ['A'-'Z'](['A'-'Z''a'-'z''0'-'9']|"-"|"_")* as n
+               { TID n }
 
 (* fin de lecture *)
 | eof          { EOF }

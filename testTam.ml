@@ -137,3 +137,12 @@ let%expect_test "sujet" =
 let%expect_test "code_avec_ad_etpointeur" = 
 runtam "../../fichiersRat/src-rat-tam-test/testAdd_avec_point.rat";
 [%expect{| 5 |}]
+
+(* Test types nommées*)
+let%expect_test "sujet_avec_tyN" =
+  runtam "../../fichiersRat/testTyNsujet.rat";
+  [%expect{| 3 |}]
+
+let%expect_test "sujet_avec_tyN2" =
+runtam "../../fichiersRat/testTyNsujet2.rat";
+[%expect{| 7 |}]
