@@ -114,6 +114,11 @@ let%expect_test "factrec" =
   runtam "../../fichiersRat/src-rat-tam-test/factrec.rat";
   [%expect{| 120 |}]
 
+let%expect_test "factrec2" =
+  runtam "../../fichiersRat/src-rat-tam-test/fatrec_avecrat.rat";
+  [%expect{| [1/1] |}]
+
+
 (* Test avec pointeur*)
 
 let%expect_test "sujet" =
@@ -141,6 +146,10 @@ runtam "../../fichiersRat/src-rat-tam-test/testAdd_avec_point.rat";
 (* Test types nommées*)
 let%expect_test "sujet_avec_tyN" =
   runtam "../../fichiersRat/testTyNsujet.rat";
+  [%expect{| 3 |}]
+
+let%expect_test "sujet_avec_tyN_rec" =
+  runtam "../../fichiersRat/src-rat-tam-test/testTyNo_rec.rat";
   [%expect{| 3 |}]
 
 let%expect_test "sujet_avec_tyN2" =

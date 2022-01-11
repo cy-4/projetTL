@@ -1,0 +1,11 @@
+rat plus (rat i rat n){
+    rat ii =i;
+    rat nn = n;
+    rat res = (ii + nn);
+    return res;
+    }
+
+test{
+  rat x = call plus ([1/2] [1/2]);
+  print x;
+}
