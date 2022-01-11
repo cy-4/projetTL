@@ -19,14 +19,15 @@ struct
 let rec analyse_placement_instruction i base reg =
   match i with
   | AstType.Declaration (info, _) ->
-      begin
-      match info_ast_to_info info with
-        | InfoVar(_,t,_,_) -> let taille = getTaille t in 
-                             (* On rajoute l'information du placement mémoire dans la variable*)
-                             modifier_adresse_info base reg info;
-                             taille
-        | _ -> failwith "Internal Error"
-      end
+    begin
+    match info_ast_to_info info with
+    | InfoVar(_,t,_,_) -> 
+      let taille = getTaille t in 
+      (* On rajoute l'information du placement mémoire dans la variable*)
+      modifier_adresse_info base reg info;
+      taille
+    | _ -> failwith "Internal Error"
+    end
 
   | AstType.Conditionnelle (_,t,e) -> 
     (*On rajoute l'information du placement mémoire au variable des 2 blocs*)
@@ -36,11 +37,11 @@ let rec analyse_placement_instruction i base reg =
     0
 
   | AstType.TantQue (_,b) -> 
-      (* On rajoute l'information du placement mémoire au variable du bloc*)
-      let _ = analyse_placement_bloc b base reg in
-      (* A la fin du while, on a pas augmenté le registre courant*)
-      0
-   | _ -> 0
+    (* On rajoute l'information du placement mémoire au variable du bloc*)
+    let _ = analyse_placement_bloc b base reg in
+    (* A la fin du while, on a pas augmenté le registre courant*)
+    0
+  | _ -> 0
  
 
       
@@ -50,14 +51,15 @@ let rec analyse_placement_instruction i base reg =
 (* Paramètre li : liste d'instructions à analyser *)
 (* On rajoute le placement mémoire à chaque instruction du bloc *)
 and analyse_placement_bloc li base reg =
-   begin
-   match li with
-        | [] -> base
-        (* On rajoute l'information du placement mémoire à l'instrution,
-        Puis on fait appel à nouveaux à la fonction suivate avec la base m-a-j*)
-        | t::q -> let taille = analyse_placement_instruction t base reg in
-                                analyse_placement_bloc q (base+taille) reg
-    end
+  begin
+  match li with
+  | [] -> base
+  (* On rajoute l'information du placement mémoire à l'instrution,
+  Puis on fait appel à nouveaux à la fonction suivate avec la base m-a-j*)
+  | t::q -> 
+    let taille = analyse_placement_instruction t base reg in
+    analyse_placement_bloc q (base+taille) reg
+  end
 
 
 
@@ -65,20 +67,19 @@ and analyse_placement_bloc li base reg =
 (* Paramètre fonction : fonction dont qu'on modifie *)
 (* On rajoute le placement mémoire à chaque paramètre de la fonction et aux instructions de la fonction *) 
 let analyse_placement_fonction _  (AstType.Fonction(info,lp,li)) =
-    (* On rajoute l'information du placement mémoire aux arguments de la fonction*)
-    let _ = List.fold_right (
-      fun pointeur reg ->
-        match info_ast_to_info pointeur with
-          | InfoVar(_,t,_,_) -> let taille= getTaille t in  
-                                let _ =modifier_adresse_info (reg-taille) "LB" pointeur in 
-                                reg-taille
-          | _ -> failwith "Interne error"
-    )
-     lp 0 in
-     (*  On rajoute l'information du placement mémoire aux instructions de la fonctions*)
-     let _ = analyse_placement_bloc li 3 "LB" in
-     (AstPlacement.Fonction(info,lp,li)
-    )
+  (* On rajoute l'information du placement mémoire aux arguments de la fonction*)
+  let _ = List.fold_right (
+    fun pointeur reg ->
+      match info_ast_to_info pointeur with
+      | InfoVar(_,t,_,_) -> 
+        let taille= getTaille t in  
+        let _ =modifier_adresse_info (reg-taille) "LB" pointeur in 
+        reg-taille
+      | _ -> failwith "Interne error"
+    ) lp 0 in
+    (*  On rajoute l'information du placement mémoire aux instructions de la fonctions*)
+    let _ = analyse_placement_bloc li 3 "LB" in
+    (AstPlacement.Fonction(info,lp,li))
                                             
 
 (* analyser : AstType.ast -> AstType.ast *)
